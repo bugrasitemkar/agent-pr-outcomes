@@ -1,0 +1,14 @@
+{
+  "name": "review-router-spike",
+  "main": "src/worker.py",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["python_workers"],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "review-router-spike", "database_id": "2ca6c558-bbd1-4b2d-9351-19437ba32d3e" }
+  ],
+  "queues": {
+    "producers": [{ "binding": "JOBS", "queue": "review-router-spike-jobs" }],
+    "consumers": [{ "queue": "review-router-spike-jobs", "max_batch_size": 10, "max_retries": 3 }]
+  },
+  "observability": { "enabled": true }
+}

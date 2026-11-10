@@ -1,0 +1,9 @@
+[project]
+name = "review-router-worker"
+version = "0.0.1"
+description = "Review Router webhook worker (spike)"
+requires-python = ">=3.13"
+dependencies = ["fastapi", "pyjwt", "cryptography"]
+
+[dependency-groups]
+dev = ["workers-py", "workers-runtime-sdk"]

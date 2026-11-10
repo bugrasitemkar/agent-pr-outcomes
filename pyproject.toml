@@ -1,0 +1,16 @@
+[project]
+name = "review-router"
+version = "0.0.0"
+requires-python = ">=3.12"
+
+[tool.uv.workspace]
+members = ["packages/engine"]
+
+[tool.uv.sources]
+review-router-engine = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8", "review-router-engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/engine/tests"]
