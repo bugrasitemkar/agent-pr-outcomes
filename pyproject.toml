@@ -13,4 +13,4 @@ review-router-engine = { workspace = true }
 dev = ["pytest>=8", "review-router-engine"]
 
 [tool.pytest.ini_options]
-testpaths = ["packages/engine/tests"]
+testpaths = ["packages/engine/tests", "tools/backtest"]

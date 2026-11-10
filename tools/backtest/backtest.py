@@ -388,6 +388,64 @@ def outcomes(p: dict, history: list[dict]) -> dict:
     return {"revert": revert, "fix": fix, "event": revert or fix}
 
 
+def fisher_two_sided(a: int, b: int, c: int, d: int) -> float:
+    """Fisher exact test on [[a, b], [c, d]] (a,b = group1 events/non-events)."""
+    n1, n2, k = a + b, c + d, a + c
+    n = n1 + n2
+
+    def p_of(x: int) -> float:
+        return math.comb(n1, x) * math.comb(n2, k - x) / math.comb(n, k)
+
+    lo, hi = max(0, k - n2), min(k, n1)
+    p_obs = p_of(a)
+    return min(1.0, sum(p for x in range(lo, hi + 1) if (p := p_of(x)) <= p_obs * (1 + 1e-9)))
+
+
+def holm(pvals: dict[str, float]) -> dict[str, float]:
+    items = sorted(pvals.items(), key=lambda kv: kv[1])
+    m, out, running = len(items), {}, 0.0
+    for i, (key, p) in enumerate(items):
+        running = max(running, min(1.0, (m - i) * p))
+        out[key] = running
+    return out
+
+
+def feature_table(rows: list[dict]) -> list[dict]:
+    """Exploratory: event rate with vs without each binary feature, Fisher + Holm."""
+    feats = {
+        "critical_paths": lambda r: "critical_paths" in r["reasons"],
+        "large_change": lambda r: "large_change" in r["reasons"],
+        "many_owners": lambda r: "many_owners" in r["reasons"],
+        "too_many_files": lambda r: "too_many_files" in r["reasons"],
+        "ci_not_success": lambda r: r["ci"] != "success",
+        "no_test_changes": lambda r: "Source changes without test changes" in r["missing"],
+        "no_linked_ticket": lambda r: "Agent PR without a linked issue/ticket" in r["missing"],
+        **{f"agent_{s}": (lambda s: lambda r: r["source"] == s)(s) for s in SOURCES},
+    }
+    stats, pvals = {}, {}
+    for name, fn in feats.items():
+        yes = [r for r in rows if fn(r)]
+        no = [r for r in rows if not fn(r)]
+        if not yes or not no:
+            continue
+        a, c = sum(r["event"] for r in yes), sum(r["event"] for r in no)
+        p = fisher_two_sided(a, len(yes) - a, c, len(no) - c)
+        ry, rn = a / len(yes), c / len(no)
+        stats[name] = {
+            "feature": name,
+            "n_with": len(yes),
+            "rate_with": round(ry, 4),
+            "n_without": len(no),
+            "rate_without": round(rn, 4),
+            "rate_ratio": round(ry / rn, 3) if rn else None,
+            "p": round(p, 5),
+        }
+        pvals[name] = p
+    for k, v in holm(pvals).items():
+        stats[k]["p_holm"] = round(v, 5)
+    return sorted(stats.values(), key=lambda s: s["p"])
+
+
 def wilson(k: int, n: int, z: float = 1.645) -> tuple[float, float]:
     if n == 0:
         return (0.0, 1.0)
@@ -446,6 +504,8 @@ def summarize(rows: list[dict], label: str) -> dict:
     out["ratio_ci90"] = [lo, hi] if lo is None else [round(lo, 3), round(hi, 3) if hi != math.inf else "inf"]
     events = sum(r["event"] for r in rows)
     t1n, t3n = out["tiers"]["T1"]["n"], out["tiers"]["T3"]["n"]
+    e1, e3 = out["tiers"]["T1"]["events"], out["tiers"]["T3"]["events"]
+    out["fisher_p_T3_vs_T1"] = round(fisher_two_sided(e3, t3n - e3, e1, t1n - e1), 5) if t1n and t3n else None
     if t1n < 300 or t3n < 300 or events < 30:
         verdict = "inconclusive (sample too small)"
     elif point is not None and point >= 2.0 and lo is not None and lo > 1.0:
@@ -500,6 +560,7 @@ def cmd_evaluate(args) -> None:
         "split": want,
         "summary": summarize(sel, want),
         "per_source": {s: summarize([r for r in sel if r["source"] == s], s)["tiers"] for s in SOURCES},
+        "features_exploratory": feature_table(sel),
         "t3_reasons": reasons.most_common(),
         "author_kinds": Counter(r["author_kind"] for r in sel).most_common(),
         "missing_evidence": Counter(m for r in sel for m in r["missing"]).most_common(),
