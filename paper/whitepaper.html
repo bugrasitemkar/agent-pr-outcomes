@@ -80,6 +80,72 @@ pre-registered label definition the effect was 1.5× and not significant
 (Appendix B). Half of agent PRs carry no linked issue, and a quarter
 change source code without touching tests. We release the pipeline,
 pre-registration, audit and PR-level dataset.</p>
+<h2 id="executive-summary">Executive summary</h2>
+<p><strong>The question.</strong> Coding agents now open a large share
+of pull requests, and AI tools have started approving and merging them.
+Which agent PRs actually cause trouble after they are merged? Nobody
+publishes this data.</p>
+<p><strong>What we did.</strong> We looked at 2,211 merged PRs written
+by four coding agents (GitHub Copilot, Devin, Cursor, Jules) in 571
+active open-source projects. For each PR we checked whether it was
+reverted, or followed by a fix that explicitly referred to it, within
+two weeks. We wrote down our rules and hypotheses before looking at any
+outcome (one later correction to how outcomes are labelled is disclosed
+in Appendix B), and we read every flagged case by hand.</p>
+<p><strong>What we found.</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr>
+<td><strong>Agent PRs often arrive without evidence</strong></td>
+<td>52% have no linked issue, 26% change code without touching tests,
+and <strong>16% were merged while CI was red or missing</strong>. Only
+7% met a reasonable bar for a fast-track review.</td>
+</tr>
+<tr>
+<td><strong>Post-merge trouble is rare</strong></td>
+<td>About <strong>1 in 75</strong> agent PRs (1.3%) was reverted or
+needed a referenced fix within two weeks. None of the 156
+fast-track-eligible PRs did.</td>
+</tr>
+<tr>
+<td><strong>Merging on red creates follow-up work</strong></td>
+<td>PRs merged without passing CI were followed by <strong>about 3× as
+much follow-up work</strong> (3.2% vs 1.0%). Part of that work is
+repairing the broken build itself. Whether merging on red also causes
+more real defects is suggested (2.3×) but not statistically
+established.</td>
+</tr>
+<tr>
+<td><strong>Our main hypothesis could not be tested yet</strong></td>
+<td>We set out to test whether “high-risk” PRs fail more often than
+“fast-track” ones. Public data is too small to answer this: it would
+take 10–20× more agent PRs than exist in active open-source projects
+today.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What engineering leaders can do now.</strong></p>
+<ol type="1">
+<li><strong>Make passing CI a hard requirement for merging agent
+PRs.</strong> It is free, already built into GitHub branch protection,
+and was skipped for one in six agent PRs in our sample.</li>
+<li><strong>Make agents bring evidence:</strong> a linked issue, tests
+and green CI. Most agent PRs today cannot qualify for safe auto-approval
+because this evidence is missing.</li>
+<li><strong>Measure your own outcomes before trusting AI
+approval.</strong> Vendors do not publish how often AI-approved changes
+are later reverted. Our open-source pipeline can be pointed at your own
+repositories.</li>
+</ol>
+<p><strong>Limits.</strong> This is an exploratory, not peer-reviewed
+study of public open-source projects, which differ from private
+enterprise codebases. Outcome labels are approximate: about two thirds
+to three quarters of flagged cases were confirmed by hand. Per-agent
+numbers are descriptive and are not a ranking of vendors.</p>
 <h2 id="introduction">1. Introduction</h2>
 <p>Coding agents moved from autocomplete to authorship in 2025–2026.
 GitHub reports that agents initiated more than 40% of pull requests on
@@ -572,7 +638,31 @@ report can be pointed at any GitHub organisation.</li>
 no published revert or fix rates for AI-approved changes. Buyers can
 request them.</li>
 </ol>
-<h2 id="reproducibility">8. Reproducibility</h2>
+<h2 id="conclusion">8. Conclusion</h2>
+<p>Coding agents have made pull requests cheap to produce. Our results
+suggest the bottleneck has moved to the <strong>evidence</strong> that
+accompanies them, not to the code itself. In 571 active open-source
+projects, most agent PRs arrived without a linked issue, a quarter
+changed code without tests, and one in six was merged without passing
+CI. Post-merge trouble was rare (≈1.3% within two weeks) and
+concentrated in PRs merged while CI was not passing. Part of that
+concentration is the cost of repairing the build afterwards, and the
+evidence that it also produces behavioural defects remains
+suggestive.</p>
+<p>Our pre-registered question, whether simple metadata-only risk tiers
+separate safe agent PRs from risky ones, could not be answered with
+public data. Doing so needs an order of magnitude more agent PRs than
+active open-source projects currently produce, or access to private
+repositories. We see this as the most useful next step: the platforms
+now letting AI approve and merge changes hold exactly the outcome data
+that would settle it, and publishing it would let teams calibrate how
+much to trust automated approval.</p>
+<p>Until then, the most defensible policy is also the simplest:
+<strong>require green CI, tests and a linked issue before an agent PR
+can merge, and measure what happens afterwards.</strong> The pipeline,
+pre-registration, audit and dataset released with this report are meant
+to make that measurement easy to repeat.</p>
+<h2 id="reproducibility">9. Reproducibility</h2>
 <p>Code (MIT), pre-registration, and the PR-level dataset (identifiers,
 features, tiers, outcome labels; no code or PR text) are available
 at:</p>
