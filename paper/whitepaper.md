@@ -189,8 +189,8 @@ Until then, the most defensible policy is also the simplest: **require green CI,
 Code (MIT), pre-registration, and the PR-level dataset (identifiers, features, tiers, outcome labels; no code or PR text) are available at:
 
 - GitHub: https://github.com/bugrasitemkar/agent-pr-outcomes
-- Hugging Face dataset: [TBD]
-- Zenodo DOI: [TBD] (primary citable version; arXiv not planned)
+- Hugging Face dataset: https://huggingface.co/datasets/bugrasitemkar/agent-pr-outcomes
+- Zenodo DOI (all versions): https://doi.org/10.5281/zenodo.24112055 · v1.0: https://doi.org/10.5281/zenodo.24112056
 
 ## Appendix A — Pre-registration
 

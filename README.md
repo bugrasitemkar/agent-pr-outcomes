@@ -1,7 +1,7 @@
 # Merged While Red: post-merge outcomes of agent-authored pull requests
 
 **Exploratory technical report.** It is pre-registered but not peer reviewed.
-📄 Report: [`paper/whitepaper.pdf`](paper/whitepaper.pdf) · DOI: _(Zenodo, TBD)_ · Dataset: [`data/agent_pr_outcomes.csv`](data/agent_pr_outcomes.csv) · Hugging Face: _(TBD)_
+📄 Report: [`paper/whitepaper.pdf`](paper/whitepaper.pdf) · DOI: [10.5281/zenodo.24112055](https://doi.org/10.5281/zenodo.24112055) · Dataset: [`data/agent_pr_outcomes.csv`](data/agent_pr_outcomes.csv) · Hugging Face: [bugrasitemkar/agent-pr-outcomes](https://huggingface.co/datasets/bugrasitemkar/agent-pr-outcomes)
 
 We studied **2,211 merged pull requests** opened by four coding agents (GitHub Copilot coding agent, Devin, Cursor, Jules) in **571 active open-source repositories**, merged July–October 2026. Each PR got a deterministic, metadata-only risk tier. We then checked whether it was reverted, or followed by a fix that explicitly references it, within 14 days.
 
@@ -55,7 +55,7 @@ Public GitHub data changes over time: repositories get deleted, renamed or edite
 
 ## Citation
 
-Sitemkar, B. (2026). *Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source.* Exploratory technical report. ORCID 0009-0009-2797-7077. DOI: TBD.
+Sitemkar, B. (2026). *Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source.* Exploratory technical report. ORCID 0009-0009-2797-7077. https://doi.org/10.5281/zenodo.24112055
 
 ## License
 

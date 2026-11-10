@@ -18,7 +18,7 @@ task_categories:
 
 This dataset has 2,211 merged pull requests opened by four coding agents: GitHub Copilot coding agent, Devin, Cursor and Jules. They come from 571 active open-source repositories (≥50 stars, ≥3 human contributors) and were merged between 2026-07-01 and 2026-10-15. Each PR has a deterministic, metadata-only risk tier, its CI state at merge, and 14-day post-merge outcome labels.
 
-It accompanies the exploratory technical report *Merged While Red* (Sitemkar, 2026). The code, the pre-registration and the full methodology are at https://github.com/bugrasitemkar/agent-pr-outcomes.
+It accompanies the exploratory technical report *Merged While Red* (Sitemkar, 2026), https://doi.org/10.5281/zenodo.24112055. The code, the pre-registration and the full methodology are at https://github.com/bugrasitemkar/agent-pr-outcomes.
 
 ## Columns
 
@@ -43,4 +43,4 @@ It accompanies the exploratory technical report *Merged While Red* (Sitemkar, 20
 
 ## Citation
 
-Sitemkar, B. (2026). *Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source.* DOI: TBD.
+Sitemkar, B. (2026). *Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source.* https://doi.org/10.5281/zenodo.24112055
