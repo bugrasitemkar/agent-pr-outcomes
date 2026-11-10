@@ -152,3 +152,24 @@ def test_linear_key_counts_as_ticket():
 
 def test_fail_closed_is_never_t1():
     assert fail_closed("alice", "timeout").tier == Tier.T3
+
+
+@pytest.mark.parametrize(
+    "login,agent",
+    [
+        ("Copilot", "copilot"),  # REST form
+        ("copilot-swe-agent", "copilot"),  # GraphQL form
+        ("devin-ai-integration[bot]", "devin"),
+        ("devin-ai-integration", "devin"),
+        ("cursor[bot]", "cursor"),
+        ("google-labs-jules", "jules"),
+    ],
+)
+def test_agent_login_forms_across_apis(login, agent):
+    d = evaluate(pr(author_login=login, author_is_bot=True))
+    assert d.author.kind == AuthorKind.AGENT and d.author.agent_name == agent
+
+
+def test_dependency_bot_graphql_form():
+    d = evaluate(pr(author_login="dependabot", author_is_bot=True))
+    assert d.author.kind == AuthorKind.DEPENDENCY_BOT

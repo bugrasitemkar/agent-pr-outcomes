@@ -10,21 +10,28 @@ from .config import CONTROL_FILES, Config
 from .globs import matches_any
 from .models import AuthorKind, AuthorSignal, ChangeType, Confidence, PRInput
 
-# Known agent accounts. TO VERIFY against backtest data; names change.
+# Known agent accounts, keyed by normalized login (lowercase, no "[bot]").
+# The same bot appears differently per API: REST "devin-ai-integration[bot]",
+# GraphQL "devin-ai-integration", and Copilot as REST "Copilot" / GraphQL
+# "copilot-swe-agent" (verified 2026-11-10).
 AGENT_LOGINS: dict[str, str] = {
     "copilot": "copilot",
-    "copilot-swe-agent[bot]": "copilot",
-    "devin-ai-integration[bot]": "devin",
-    "cursor[bot]": "cursor",
-    "cursor-agent[bot]": "cursor",
-    "claude[bot]": "claude",
-    "chatgpt-codex-connector[bot]": "codex",
-    "openai-codex[bot]": "codex",
-    "codegen-sh[bot]": "codegen",
-    "sweep-ai[bot]": "sweep",
-    "google-labs-jules[bot]": "jules",
+    "copilot-swe-agent": "copilot",
+    "devin-ai-integration": "devin",
+    "cursor": "cursor",
+    "cursor-agent": "cursor",
+    "claude": "claude",
+    "chatgpt-codex-connector": "codex",
+    "openai-codex": "codex",
+    "codegen-sh": "codegen",
+    "sweep-ai": "sweep",
+    "google-labs-jules": "jules",
 }
-DEPENDENCY_BOTS = {"dependabot[bot]", "renovate[bot]", "pre-commit-ci[bot]"}
+DEPENDENCY_BOTS = {"dependabot", "renovate", "pre-commit-ci"}
+
+
+def normalize_login(login: str) -> str:
+    return login.strip().lower().removesuffix("[bot]")
 
 AGENT_BRANCH_PREFIXES: dict[str, str] = {
     "copilot/": "copilot",
@@ -57,11 +64,11 @@ _TICKET_KEY = re.compile(r"\b[A-Z][A-Z0-9]{1,9}-\d+\b")  # Linear / Jira
 
 
 def detect_author(pr: PRInput, cfg: Config) -> AuthorSignal:
-    login = pr.author_login.lower()
+    login = normalize_login(pr.author_login)
     if login in DEPENDENCY_BOTS:
         return AuthorSignal(kind=AuthorKind.DEPENDENCY_BOT, confidence=Confidence.HIGH, evidence=[f"login:{login}"])
 
-    extra = {x.lower() for x in cfg.extra_agent_logins}
+    extra = {normalize_login(x) for x in cfg.extra_agent_logins}
     if login in AGENT_LOGINS or login in extra:
         return AuthorSignal(
             kind=AuthorKind.AGENT,

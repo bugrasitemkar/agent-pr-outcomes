@@ -8,3 +8,4 @@ node_modules/
 .dev.vars
 .venv-workers/
 python_modules/
+tools/backtest/data/
