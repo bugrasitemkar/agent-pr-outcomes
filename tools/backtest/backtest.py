@@ -73,7 +73,7 @@ def http(method: str, url: str, body: dict | None = None) -> tuple[int, dict | l
             except Exception:
                 payload = None
             return e.code, payload, hdrs
-        except (urllib.error.URLError, TimeoutError) as e:
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
             print(f"  network error {e}, retrying", file=sys.stderr)
             time.sleep(5 * (attempt + 1))
     raise RuntimeError(f"giving up on {url}")
@@ -365,10 +365,29 @@ def to_input(p: dict) -> PRInput:
     )
 
 
+# Deviation D1 (2026-11-10, found on the tuning set before the holdout was evaluated):
+# release/changelog/branch-merge commits list many PR numbers in their bodies and
+# produced false events. Rules below are applied to every commit:
+#   - aggregation commits are skipped (release/merge-branch/version-bump subjects,
+#     or bodies referencing more than MAX_REFS distinct #numbers);
+#   - revert: subject starts with 'Revert' AND (subject/body names this PR's title,
+#     number or merge SHA via GitHub's 'Reverts o/r#N' / 'This reverts commit <sha>');
+#   - fix follow-up: fix keyword in the SUBJECT and an explicit reference to this PR
+#     (number or merge SHA) anywhere in the message.
+AGGREGATE_SUBJECT = re.compile(
+    r"^(merge (branch|remote-tracking|pull request)|release|chore\(release\)|chore\(main\): release|"
+    r"bump version|version bump|v?\d+\.\d+\.\d+|\[automated\]|sync |update changelog|changelog)",
+    re.I,
+)
+REF_ANY = re.compile(r"#(\d+)\b")
+MAX_REFS = 3
+
+
 def outcomes(p: dict, history: list[dict]) -> dict:
     merged = dt.datetime.fromisoformat(p["mergedAt"].replace("Z", "+00:00"))
     end = merged + dt.timedelta(days=WINDOW_DAYS)
-    sha = ((p.get("mergeCommit") or {}).get("oid") or "")[:7]
+    full_sha = (p.get("mergeCommit") or {}).get("oid") or ""
+    sha = full_sha[:7]
     num_ref = re.compile(rf"#{p['number']}\b")
     title = (p.get("title") or "").strip()
     revert = fix = False
@@ -379,11 +398,20 @@ def outcomes(p: dict, history: list[dict]) -> dict:
         if sha and c["oid"].startswith(sha):
             continue  # the PR's own merge commit
         msg = c["message"] or ""
+        subject = msg.splitlines()[0] if msg else ""
+        if AGGREGATE_SUBJECT.search(subject.strip()):
+            continue
+        if len(set(REF_ANY.findall(msg))) > MAX_REFS:
+            continue
+        # The PR's own commit landed under a different SHA (merge queue / rebase):
+        # its subject repeats the PR title.
+        if title and subject.strip().lower().startswith(title[:40].lower()) and f"(#{p['number']})" in subject:
+            continue
         refs = bool(sha and sha in msg) or bool(num_ref.search(msg))
-        is_revert = "revert" in msg.lower() and (refs or (title and f'Revert "{title}' in msg))
-        if is_revert:
-            revert = True
-        elif refs and FIX_KW.search(msg):
+        if subject.lower().startswith("revert"):
+            if refs or (title and f'Revert "{title}' in subject):
+                revert = True
+        elif refs and FIX_KW.search(subject):
             fix = True
     return {"revert": revert, "fix": fix, "event": revert or fix}
 
@@ -524,15 +552,22 @@ def cmd_evaluate(args) -> None:
     cfg = Config()
     rows = []
     reasons = Counter()
+    skipped_truncated = 0
     for p in prs:
         if not p.get("mergedAt"):
             continue
         hp = hist_path(p["repo"])
         if not hp.exists():
             continue
+        history = read_jsonl(hp)
+        # Deviation D3: if a repo's history hit the page cap and does not reach back to
+        # this PR's merge time, its outcome window is incomplete -> exclude the PR.
+        if history and len(history) % 100 == 0 and min(c["committedDate"] for c in history) > p["mergedAt"]:
+            skipped_truncated += 1
+            continue
         inp = to_input(p)
         d = evaluate(inp, cfg)
-        oc = outcomes(p, read_jsonl(hp))
+        oc = outcomes(p, history)
         rows.append(
             {
                 "repo": p["repo"],
@@ -558,6 +593,7 @@ def cmd_evaluate(args) -> None:
     sel = [r for r in rows if want == "all" or r["split"] == want]
     report = {
         "split": want,
+        "skipped_truncated_history": skipped_truncated,
         "summary": summarize(sel, want),
         "per_source": {s: summarize([r for r in sel if r["source"] == s], s)["tiers"] for s in SOURCES},
         "features_exploratory": feature_table(sel),

@@ -43,3 +43,13 @@ Purpose: kill gate from the plan. Do the engine's tiers predict real-world troub
 ## Also reported (product finding, not part of the gate)
 - Tier distribution. If T1 is a sliver of agent PRs, the "free senior attention" pitch is weak even if R passes.
 - Per-agent breakdown and per-reason breakdown of T3.
+
+## Deviations (recorded before the holdout set was evaluated)
+
+All deviations were made after inspecting **tuning-set** events only. Engine rules (tiers) were **not** changed. Labels are frozen at the commit that adds this section; the holdout is evaluated once, after that commit.
+
+- **D0 — Statistics added (2026-11-10).** Fisher exact test (T3 vs T1) and an exploratory per-feature table with Holm–Bonferroni correction. Reporting only; no change to the decision rule.
+- **D1 — Aggregation commits excluded from outcome labelling.** Release, changelog, version-bump and branch-merge commits list many PR numbers in their bodies and produced false events. Such commits are skipped (subject pattern), as is any commit referencing more than 3 distinct `#numbers`. Revert requires a subject starting with "Revert"; fix requires the fix keyword in the **subject**. (Original rule matched keywords anywhere in the message.)
+- **D2 — PR's own commit under a different SHA excluded.** With merge queues or rebase merges the PR's commit can land with a SHA other than `mergeCommit.oid`. A commit whose subject starts with the PR title and carries the `(#N)` suffix is treated as the PR itself.
+- **D3 — Truncated histories.** History fetch stopped at 3,000 commits per repo, cutting off the start of the outcome window in 14 large repositories (166 PRs). Those repositories were refetched with a higher page cap; any PR whose window start is still not covered is excluded and the count is reported.
+- **Sample size.** No extension of the sample. A power calculation (reported in the paper) shows that the pre-registered minimums cannot be met with public OSS data at current agent-PR volumes; extending the sample would not make the gate decisive.

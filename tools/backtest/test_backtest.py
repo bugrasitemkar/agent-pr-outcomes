@@ -86,3 +86,29 @@ def test_fisher_matches_known_value():
 def test_holm_is_monotone_and_capped():
     out = bt.holm({"a": 0.01, "b": 0.02, "c": 0.5})
     assert out["a"] == 0.03 and out["b"] == 0.04 and out["c"] == 0.5
+
+
+def test_release_commit_listing_many_prs_is_ignored():
+    body = "chore(main): release 2.55.0 (#5482)\n\n* fix: a (#42)\n* fix: b (#43)\n* fix: c (#44)\n* fix: d (#45)"
+    assert not bt.outcomes(pr(), [c(body)])["event"]
+
+
+def test_merge_branch_commit_is_ignored():
+    assert not bt.outcomes(pr(), [c("[automated] Merge branch 'release/11.0' => 'main' (#69175)\n\nfix #42")])["event"]
+
+
+def test_fix_keyword_must_be_in_subject():
+    assert not bt.outcomes(pr(), [c("feat: new thing (#50)\n\nfollow-up to #42, fixes nothing")])["event"]
+
+
+def test_revert_body_listing_is_not_a_revert():
+    assert not bt.outcomes(pr(), [c("Release develop to master (#281)\n\n* Revert something (#42)")])["event"]
+
+
+def test_own_commit_under_different_sha_is_ignored():
+    assert not bt.outcomes(pr(), [c("Add retry to client (#42)", oid="9999999")])["event"]
+
+
+def test_short_title_does_not_swallow_real_followups():
+    p = pr(title="Fix bug")
+    assert bt.outcomes(p, [c("Fix bug in parser introduced by #42")])["fix"]
