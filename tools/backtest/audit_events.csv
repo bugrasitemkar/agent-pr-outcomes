@@ -1,0 +1,30 @@
+repo,number,label,verdict,note
+github/gh-aw,48619,FIX,probable,test assertion follow-up
+homebridge/homebridge-config-ui-x,2881,FIX,false,PR's own commit (subject paraphrases title)
+BerriAI/litellm,40195,FIX,probable,related cost-map follow-up
+harness/mcp-server,581,FIX,false,different PR merged later mentioning #581
+latitude-dev/latitude-llm,3986,FIX,true,"incomplete fix: 'still used ... after #3986'"
+latitude-dev/latitude-llm,4005,FIX,true,incomplete fix follow-up
+mattermost/mattermost,37972,FIX,true,layout regression follow-up
+dfinity/oisy-wallet,13361,FIX,true,"'follow-up to ... #13361 (already merged)'"
+microlinkhq/html-get,277,FIX,true,"'#277 upgrade guard only checked status'"
+MetaMask/metamask-mobile,32639,FIX,true,"'failures from #32639'"
+MetaMask/metamask-mobile,32254,FIX,probable,"'shards fail after ...'"
+primer/react,8507,REV,true,GitHub revert
+JeffSteinbok/hass-dreo,856,FIX,false,docs credit commit
+cocos/cocos4,216,REV,true,GitHub revert
+kynema/kynema-ugf,1488,REV,true,GitHub revert
+microsoft/typespec,11876,FIX,true,model compatibility follow-up
+YoungCan-Wang/WyckoffTradingAgent,389,FIX,true,"'#389 introduced ...'"
+dnum-mi/vue-dsfr,1368,FIX,ambiguous,planned removal of a temporary workaround
+weave-os/router,897,FIX,true,"incomplete: 'covered only one of two strategies'"
+koala73/worldmonitor,7438,FIX,true,"'kept firing after #7438 declared it fixed'"
+nco/nco,313,REV,true,reverted then re-landed
+e2b-dev/E2B,1949,REV,ambiguous,revert of another change to unblock release
+tetsuo-ai/agenc-core,1872,FIX,true,"'post-#1872 ... aborted the whole request'"
+tetsuo-ai/agenc-core,1937,FIX,true,follow-up to #1937
+gosuda/bitcoin-rs,316,FIX,false,merge commit
+gosuda/bitcoin-rs,352,FIX,true,lint follow-up to #352
+openenv/OpenEnv,1175,FIX,probable,release-blocker follow-up
+morpho-org/vault-v2,1109,REV,false,revert of a different PR (#1114)
+sockethub/sockethub,1290,FIX,true,collision follow-up
