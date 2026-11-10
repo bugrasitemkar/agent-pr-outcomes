@@ -9,6 +9,11 @@ from .globs import matches
 # GitHub looks for CODEOWNERS in these locations, in this order.
 CODEOWNERS_LOCATIONS = (".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS")
 
+# The only path the App reads (single-file permission covers exactly one path;
+# decided 2026-11-10). Repos with CODEOWNERS elsewhere get default rules.
+# All three locations remain control files: touching any of them forces T3.
+CODEOWNERS_READ_PATH = ".github/CODEOWNERS"
+
 
 @dataclass(frozen=True)
 class Rule:
