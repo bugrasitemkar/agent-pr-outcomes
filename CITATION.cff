@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this report, code or dataset, please cite it as below."
+title: "Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source"
+type: report
+authors:
+  - family-names: Sitemkar
+    given-names: Bugra
+    orcid: "https://orcid.org/0009-0009-2797-7077"
+    affiliation: Independent researcher
+license: MIT
+repository-code: "https://github.com/bugrasitemkar/agent-pr-outcomes"
+version: "1.0.0"
+date-released: "2026-11-10"

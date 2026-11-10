@@ -1,7 +1,7 @@
 ---
 title: "Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source. A Pre-Registered Exploratory Study of Four Coding Agents"
 author: "Bugra Sitemkar (independent researcher, ORCID 0009-0009-2797-7077)"
-date: "DRAFT — 2026-11"
+date: "Version 1.0 — 2026-11-10"
 status: "Exploratory technical report. Not peer reviewed."
 ---
 
@@ -188,7 +188,7 @@ Until then, the most defensible policy is also the simplest: **require green CI,
 
 Code (MIT), pre-registration, and the PR-level dataset (identifiers, features, tiers, outcome labels; no code or PR text) are available at:
 
-- GitHub: `github.com/bugrasitemkar/agent-pr-outcomes` [TBD]
+- GitHub: https://github.com/bugrasitemkar/agent-pr-outcomes
 - Hugging Face dataset: [TBD]
 - Zenodo DOI: [TBD] (primary citable version; arXiv not planned)
 

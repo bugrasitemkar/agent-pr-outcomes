@@ -1,0 +1,10 @@
+{
+  "title": "Merged While Red: Post-Merge Outcomes of 2,211 Agent-Authored Pull Requests in Open Source",
+  "description": "Exploratory, pre-registered technical report with code and dataset. Studies 2,211 merged pull requests authored by four coding agents (GitHub Copilot coding agent, Devin, Cursor, Jules) in 571 active open-source repositories, assigning deterministic metadata-only risk tiers and labelling 14-day post-merge reverts and referenced fixes. Not peer reviewed.",
+  "upload_type": "publication",
+  "publication_type": "report",
+  "creators": [{"name": "Sitemkar, Bugra", "orcid": "0009-0009-2797-7077", "affiliation": "Independent researcher"}],
+  "license": "MIT",
+  "keywords": ["coding agents", "pull requests", "code review", "software engineering", "pre-registration", "CI"],
+  "language": "eng"
+}
